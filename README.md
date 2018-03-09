@@ -16,21 +16,24 @@ The second video stream has been *reconstructed* from the segmented [audio], str
 
 ## Background
 
-For details, see the [poster] presented at ECEM 2015:
+For details, see the [paper] to be presented at LREC 2018:
 ```bibtex
-@InProceedings{Khan2015ECEM,
-  author    = {Khan, Arif and Steiner, Ingmar and Macdonald, Ross and Sugano, Yusuke and Bulling, Andreas},
-  title     = {Scene viewing and gaze analysis during phonetic segmentation tasks},
-  booktitle = {18th European Conference on Eye Movements (ECEM)},
-  year      = {2015},
-  address   = {Vienna, Austria},
-  month     = aug,
+@inproceedings{Khan2018LREC,
+  year = {2018},
+  month = may,
+  booktitle = {11th Language Resources and Evaluation Conference (LREC)},
+  address = {Miyazaki, Japan},
+  author = {Khan, Arif and Steiner, Ingmar and Sugano, Yusuke and Bulling, Andreas and Macdonald, Ross},
+  eprint = {1712.04798},
+  eprinttype = {arxiv},
+  note = {in press},
+  title = {A Multimodal Corpus of Expert Gaze and Behavior during Phonetic Segmentation Tasks},
+  url = {https://arxiv.org/abs/1712.04798}
 }
 ```
-![ECEM 2015 poster](http://www.coli.uni-saarland.de/~steiner/publications/ECEMPoster.png)
 
 [5 min. preview]: https://github.com/m2ci-msp/eyetracking-data/releases/tag/v1.0-preview
 [Matroska]: https://www.matroska.org/
 [VLC]: https://www.videolan.org/vlc/
 [audio]: src/experiment/northwind_rm.flac
-[poster]: http://www.coli.uni-saarland.de/~steiner/publications/ECEMPoster.pdf
+[paper]: https://arxiv.org/abs/1712.04798
