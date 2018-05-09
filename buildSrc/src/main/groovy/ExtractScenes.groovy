@@ -1,14 +1,15 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.yaml.snakeyaml.*
 
 class ExtractScenes extends DefaultTask {
 
     @InputFile
-    File srcFile
+    final RegularFileProperty srcFile = newInputFile()
 
     @OutputFile
-    File destFile
+    final RegularFileProperty destFile = newOutputFile()
 
     @TaskAction
     void extract() {
@@ -16,7 +17,7 @@ class ExtractScenes extends DefaultTask {
         def opts = new DumperOptions()
         opts.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
         def yaml = new Yaml(opts)
-        def frameIter = yaml.load(srcFile.newReader()).iterator()
+        def frameIter = yaml.load(srcFile.get().asFile.newReader()).iterator()
         def prevFrame = frameIter.next()
         def frame
         while (frameIter.hasNext()) {
@@ -35,7 +36,6 @@ class ExtractScenes extends DefaultTask {
                 end   : frame.date,
                 window: frame.window
         ]
-        yaml.dump(scenes, destFile.newWriter())
+        yaml.dump(scenes, destFile.get().asFile.newWriter())
     }
-
 }

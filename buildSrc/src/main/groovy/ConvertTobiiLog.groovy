@@ -1,4 +1,5 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import com.xlson.groovycsv.CsvParser
 import groovy.json.JsonBuilder
@@ -6,14 +7,14 @@ import groovy.json.JsonBuilder
 class ConvertTobiiLog extends DefaultTask {
 
     @InputFile
-    File srcFile
+    final RegularFileProperty srcFile = newInputFile()
 
     @OutputFile
-    File destFile
+    final RegularFileProperty destFile = newOutputFile()
 
     @TaskAction
     void convert() {
-        def tsvReader = new FileReader(srcFile)
+        def tsvReader = new FileReader(srcFile.get().asFile)
         def data = CsvParser.parseCsv(['separator': '\t'], tsvReader)
         def fixationWithData = []
         def prevXPosition = ""
@@ -40,6 +41,6 @@ class ConvertTobiiLog extends DefaultTask {
                 }
             }
         }
-        destFile.text = new JsonBuilder(fixationWithData).toPrettyString()
+        destFile.get().asFile.text = new JsonBuilder(fixationWithData).toPrettyString()
     }
 }
