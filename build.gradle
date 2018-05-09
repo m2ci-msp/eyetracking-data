@@ -90,4 +90,10 @@ subprojects {
         subtitleFile = convertScenesToSrt.destFile
         destFile = layout.buildDirectory.file("data/${project.name}.mkv")
     }
+
+    artifacts {
+        'default' muxStreams.destFile, {
+            builtBy muxStreams
+        }
+    }
 }
