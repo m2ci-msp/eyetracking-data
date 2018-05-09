@@ -3,6 +3,8 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.yaml.snakeyaml.*
 
+import java.text.SimpleDateFormat
+
 class MergeLogs extends DefaultTask {
 
     @InputFile
@@ -20,25 +22,24 @@ class MergeLogs extends DefaultTask {
         def opts = new DumperOptions()
         opts.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
         def yaml = new Yaml(opts)
-        def dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        def dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+        dateFormat.timeZone = TimeZone.getTimeZone('Europe/Berlin')
         def sceneData = []
         new Yaml().load(praatFile.get().asFile.newReader()).each { scene ->
-            def start = scene.start.getTime() as long
-            def end = scene.end.getTime() as long
             def result = data.findAll {
-                def dateInMilliseconds = Date.parse(dateFormat, it.date).getTime() as long
-                dateInMilliseconds > start && dateInMilliseconds < end
+                def timestamp = dateFormat.parse(it.date)
+                timestamp >= scene.start && timestamp < scene.end
             }
             def sceneMap = [
-                    start      : scene.start as Date,
-                    end        : scene.end as Date,
+                    start      : scene.start,
+                    end        : scene.end,
                     windowStart: scene.window.start as double,
                     windowEnd  : scene.window.end as double,
                     gaze       : []
             ]
             result.each {
                 sceneMap.gaze << [
-                        timeStamp: Date.parse(dateFormat, it.date),
+                        timeStamp: dateFormat.parse(it.date),
                         gazeType : it.value.gaze_type,
                         gazeDur  : it.value.gaze_duration as double,
                         position : [xPos: it.value.xPos as int,
