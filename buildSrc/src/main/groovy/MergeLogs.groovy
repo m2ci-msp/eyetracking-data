@@ -1,27 +1,28 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.yaml.snakeyaml.*
 
 class MergeLogs extends DefaultTask {
 
     @InputFile
-    File praatFile
+    final RegularFileProperty praatFile = newInputFile()
 
     @InputFile
-    File tobiiFile
+    final RegularFileProperty tobiiFile = newInputFile()
 
     @OutputFile
-    File destFile
+    final RegularFileProperty destFile = newOutputFile()
 
     @TaskAction
     void convert() {
-        def data = new groovy.json.JsonSlurper().parse(tobiiFile)
+        def data = new groovy.json.JsonSlurper().parse(tobiiFile.get().asFile)
         def opts = new DumperOptions()
         opts.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
         def yaml = new Yaml(opts)
         def dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
         def sceneData = []
-        new Yaml().load(praatFile.newReader()).each { scene ->
+        new Yaml().load(praatFile.get().asFile.newReader()).each { scene ->
             def start = scene.start.getTime() as long
             def end = scene.end.getTime() as long
             def result = data.findAll {
@@ -46,6 +47,6 @@ class MergeLogs extends DefaultTask {
             }
             sceneData << sceneMap
         }
-        yaml.dump(sceneData, destFile.newWriter())
+        yaml.dump(sceneData, destFile.get().asFile.newWriter())
     }
 }

@@ -1,4 +1,5 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.yaml.snakeyaml.Yaml
 
@@ -7,16 +8,16 @@ import java.time.*
 class DrawGazes extends DefaultTask {
 
     @InputFile
-    File fixSymbol
+    final RegularFileProperty fixSymbol = newInputFile()
 
     @InputFile
-    File srcFile
+    final RegularFileProperty srcFile = newInputFile()
 
     @InputFile
-    File gazeFile
+    final RegularFileProperty gazeFile = newInputFile()
 
     @OutputFile
-    File destFile
+    final RegularFileProperty destFile = newOutputFile()
 
     @TaskAction
     void overlay() {
@@ -26,7 +27,7 @@ class DrawGazes extends DefaultTask {
         def ts = []
         def xpos = []
         def ypos = []
-        new Yaml().load(gazeFile.newReader()).each { sdate ->
+        new Yaml().load(gazeFile.get().asFile.newReader()).each { sdate ->
             def row = [:]
             sdate.gaze.each { g ->
                 offset = offset ?: g.timeStamp.toInstant()
@@ -45,7 +46,7 @@ class DrawGazes extends DefaultTask {
         }
         scriptFile.append(/[tmp][1:v] overlay=x=${xpos[xpos.size() - 2]}:y=${ypos[ypos.size() - 2]}:enable='between(t,${ ts[ts.size() - 2] },${ts[ts.size() - 1]})'/)
         project.exec {
-            commandLine 'ffmpeg', '-i', srcFile, '-i', fixSymbol, '-filter_complex_script', scriptFile, '-y', destFile
+            commandLine 'ffmpeg', '-i', srcFile.get().asFile, '-i', fixSymbol.get().asFile, '-filter_complex_script', scriptFile, '-y', destFile.get().asFile
         }
     }
 

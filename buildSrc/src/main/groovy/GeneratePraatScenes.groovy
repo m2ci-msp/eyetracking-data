@@ -1,4 +1,6 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.gradle.process.JavaForkOptions
 import org.gradle.workers.*
@@ -11,13 +13,13 @@ class GeneratePraatScenes extends DefaultTask {
     final WorkerExecutor workerExecutor
 
     @InputFile
-    File scenesFile
+    final RegularFileProperty scenesFile = newInputFile()
 
     @InputFile
-    File audioFile
+    final RegularFileProperty audioFile = newInputFile()
 
     @OutputDirectory
-    File destDir
+    final DirectoryProperty destDir = newOutputDirectory()
 
     @Inject
     GeneratePraatScenes(WorkerExecutor workerExecutor) {
@@ -29,7 +31,7 @@ class GeneratePraatScenes extends DefaultTask {
         def scriptFile = project.file("$temporaryDir/script.praat")
         def spectrogramFile = project.file("$temporaryDir/sound.Spectrogram")
         scriptFile.withWriter { script ->
-            script.println "Read from file... $audioFile"
+            script.println "Read from file... ${audioFile.get().asFile}"
             script.println "To Spectrogram... 0.005 5000 0.002 20 Gaussian"
             script.println "Write to binary file... $spectrogramFile"
         }
@@ -44,9 +46,9 @@ class GeneratePraatScenes extends DefaultTask {
             errorOutput = stdout
         }
         def praatBinary = project.file(stdout.toString().trim())
-        new Yaml().load(scenesFile.newReader()).eachWithIndex { scene, s ->
+        new Yaml().load(scenesFile.get().asFile.newReader()).eachWithIndex { scene, s ->
             workerExecutor.submit(PraatSceneGenerator.class) { WorkerConfiguration config ->
-                config.params praatBinary, audioFile, spectrogramFile, scene.window.start, scene.window.end, project.file("$destDir/scene_${sprintf('%04d', s + 1)}.png")
+                config.params praatBinary, audioFile.get().asFile, spectrogramFile, scene.window.start, scene.window.end, destDir.file(String.format('scene_%04d.png', s + 1)).get().asFile
             }
         }
         workerExecutor.await()

@@ -1,4 +1,5 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.yaml.snakeyaml.Yaml
 
@@ -7,16 +8,16 @@ import java.time.*
 class ConvertScenesToSrt extends DefaultTask {
 
     @InputFile
-    File srcFile
+    final RegularFileProperty srcFile = newInputFile()
 
     @OutputFile
-    File destFile
+    final RegularFileProperty destFile = newOutputFile()
 
     @TaskAction
     void convert() {
-        destFile.withWriter { srt ->
+        destFile.get().asFile.withWriter { srt ->
             def offset
-            new Yaml().load(srcFile.newReader()).eachWithIndex { scene, s ->
+            new Yaml().load(srcFile.get().asFile.newReader()).eachWithIndex { scene, s ->
                 offset = offset ?: scene.start.toInstant()
                 def start = formatInstantToTimestamp(scene.start.toInstant(), offset)
                 def end = formatInstantToTimestamp(scene.end.toInstant(), offset)

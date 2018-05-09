@@ -1,17 +1,19 @@
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import com.xlson.groovycsv.CsvParser
 
 class FindOffsets extends DefaultTask {
-    @InputFile
-    File praatlog
 
     @InputFile
-    File tobiilog
+    final RegularFileProperty praatlog = newInputFile()
+
+    @InputFile
+    final RegularFileProperty tobiilog = newInputFile()
 
     @TaskAction
     void findOffsets() {
-        def offSet = praatStart(praatlog).time - tobiiStart(tobiilog).time
+        def offSet = praatStart(praatlog.get().asFile).time - tobiiStart(tobiilog.get().asFile).time
         project.file("gradle.properties").text = "offset=$offSet"
         println offSet
     }

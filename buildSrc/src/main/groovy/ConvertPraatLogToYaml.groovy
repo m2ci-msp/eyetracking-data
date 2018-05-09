@@ -1,15 +1,16 @@
 import groovy.time.TimeCategory
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.yaml.snakeyaml.*
 
 class ConvertPraatLogToYaml extends DefaultTask {
 
     @InputFile
-    File srcFile
+    final RegularFileProperty srcFile = newInputFile()
 
     @OutputFile
-    File destFile
+    final RegularFileProperty destFile = newOutputFile()
 
     @TaskAction
     void convert() {
@@ -20,7 +21,7 @@ class ConvertPraatLogToYaml extends DefaultTask {
         def frameStr = ''
         def offsetStr = project.findProperty('offset')
         def offset = offsetStr ? Integer.parseInt(offsetStr) : 0
-        srcFile.eachLine { line ->
+        srcFile.get().asFile.eachLine { line ->
             switch (line) {
                 case ~/^Editor type:.+/:
                     if (frameStr) {
@@ -41,6 +42,6 @@ class ConvertPraatLogToYaml extends DefaultTask {
                     break
             }
         }
-        yaml.dump(frames, destFile.newWriter())
+        yaml.dump(frames, destFile.get().asFile.newWriter())
     }
 }

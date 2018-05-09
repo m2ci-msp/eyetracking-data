@@ -25,77 +25,71 @@ subprojects {
     }
 
     task unpackData(type: UnpackData) {
-        destDir = file("$buildDir/rawData")
+        destDir = layout.buildDirectory.dir('rawData')
+        praatLogFile = destDir.file('praat.log')
+        tobiiLogFile = destDir.file('Audio_Data_Export.tsv')
+        screenCaptureFile = destDir.file('screencapture.mp4')
+        audioFile = destDir.file('audio.flac')
     }
 
     task convertPraatLogToYaml(type: ConvertPraatLogToYaml) {
-        dependsOn unpackData
-        srcFile = file("$unpackData.destDir/praat.log")
-        destFile = file("$buildDir/data/praat.yaml")
+        srcFile = unpackData.praatLogFile
+        destFile = layout.buildDirectory.file('data/praat.yaml')
     }
 
     task convertTobiiLog(type: ConvertTobiiLog) {
-        dependsOn unpackData
-        srcFile = file("$unpackData.destDir/Audio_Data_Export.tsv")
-        destFile = file("$buildDir/data/Tobii.json")
+        srcFile = unpackData.tobiiLogFile
+        destFile = layout.buildDirectory.file('data/Tobii.json')
     }
 
     task extractScenes(type: ExtractScenes) {
-        dependsOn convertPraatLogToYaml
         srcFile = convertPraatLogToYaml.destFile
-        destFile = file("$buildDir/data/scenes.yaml")
+        destFile = layout.buildDirectory.file('data/scenes.yaml')
     }
 
     task generatePraatScenes(type: GeneratePraatScenes) {
-        dependsOn extractScenes
         scenesFile = extractScenes.destFile
         audioFile = file("$rootDir/src/experiment/northwind_rm.flac")
-        destDir = file("$buildDir/scenes")
+        destDir = layout.buildDirectory.dir('scenes')
     }
 
     task generateSceneVideoSegments(type: GenerateSceneVideoSegments) {
-        dependsOn extractScenes, generatePraatScenes
         scenesFile = extractScenes.destFile
         inputDir = generatePraatScenes.destDir
-        destDir = file("$buildDir/sceneVideos")
-        finalVideoFile = file("$buildDir/sceneMovie.mp4")
+        destDir = layout.buildDirectory.dir('sceneVideos')
+        finalVideoFile = layout.buildDirectory.file('sceneMovie.mp4')
     }
 
     task convertScenesToSrt(type: ConvertScenesToSrt) {
-        dependsOn extractScenes
         srcFile = extractScenes.destFile
-        destFile = file("$buildDir/data/scenes.srt")
+        destFile = layout.buildDirectory.file('data/scenes.srt')
     }
 
     task mergeTobiiandPraatLogs(type: MergeLogs) {
-        dependsOn extractScenes, convertTobiiLog
         praatFile = extractScenes.destFile
         tobiiFile = convertTobiiLog.destFile
-        destFile = file("$buildDir/data/mergedData.yaml")
+        destFile = layout.buildDirectory.file('data/mergedData.yaml')
     }
 
     task drawGazes(type: DrawGazes) {
-        dependsOn generateSceneVideoSegments, mergeTobiiandPraatLogs
         srcFile = generateSceneVideoSegments.finalVideoFile
         gazeFile = mergeTobiiandPraatLogs.destFile
         fixSymbol = file("$rootDir/src/images/red_circle.png")
-        destFile = file("$buildDir/data/gazeVideo.mp4")
+        destFile = layout.buildDirectory.file('data/gazeVideo.mp4')
     }
 
     task findOffsets(type: FindOffsets) {
-        dependsOn unpackData
-        praatlog = file("$unpackData.destDir/praat.log")
-        tobiilog = file("$unpackData.destDir/Audio_Data_Export.tsv")
+        praatlog = unpackData.praatLogFile
+        tobiilog = unpackData.tobiiLogFile
     }
 
     task muxStreams(type: Exec) {
-        dependsOn unpackData, convertScenesToSrt, drawGazes
         def destFile = file("$buildDir/data/${project.name}.mkv")
         outputs.file destFile
         commandLine 'ffmpeg', '-loglevel', 'panic', '-y',
-                '-i', file("$drawGazes.destFile"),
-                '-i', file("$unpackData.destDir/screencapture.mp4"),
-                '-i', file("$unpackData.destDir/audio.flac"),
+                '-i', drawGazes.destFile,
+                '-i', unpackData.screenCaptureFile,
+                '-i', unpackData.audioFile,
                 '-i', convertScenesToSrt.destFile, '-disposition:s:0', 'default',
                 '-codec', 'copy',
                 '-map', '0:0',
