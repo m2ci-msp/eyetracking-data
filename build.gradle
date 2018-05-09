@@ -83,19 +83,11 @@ subprojects {
         tobiilog = unpackData.tobiiLogFile
     }
 
-    task muxStreams(type: Exec) {
-        def destFile = file("$buildDir/data/${project.name}.mkv")
-        outputs.file destFile
-        commandLine 'ffmpeg', '-loglevel', 'panic', '-y',
-                '-i', drawGazes.destFile,
-                '-i', unpackData.screenCaptureFile,
-                '-i', unpackData.audioFile,
-                '-i', convertScenesToSrt.destFile, '-disposition:s:0', 'default',
-                '-codec', 'copy',
-                '-map', '0:0',
-                '-map', '1:0',
-                '-map', '2:0',
-                '-map', '3:0',
-                destFile
+    task muxStreams(type: MuxStreams) {
+        gazeVideoFile = drawGazes.destFile
+        screenCaptureFile = unpackData.screenCaptureFile
+        audioFile = unpackData.audioFile
+        subtitleFile = convertScenesToSrt.destFile
+        destFile = layout.buildDirectory.file("data/${project.name}.mkv")
     }
 }
