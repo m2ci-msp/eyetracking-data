@@ -39,6 +39,7 @@ class MergeLogs extends DefaultTask {
             ]
             result.each {
                 sceneMap.gaze << [
+                        vp       : project.name - 'vp',
                         timeStamp: dateFormat.parse(it.date),
                         gazeType : it.value.gaze_type,
                         gazeDur  : it.value.gaze_duration as double,
