@@ -16,7 +16,7 @@ The second video stream has been *reconstructed* from the segmented [audio], str
 
 ## Background
 
-For details, see the [paper] to be presented at LREC 2018:
+For details, see the [paper] presented at LREC 2018:
 ```bibtex
 @inproceedings{Khan2018LREC,
   year = {2018},
@@ -24,11 +24,12 @@ For details, see the [paper] to be presented at LREC 2018:
   booktitle = {11th Language Resources and Evaluation Conference (LREC)},
   address = {Miyazaki, Japan},
   author = {Khan, Arif and Steiner, Ingmar and Sugano, Yusuke and Bulling, Andreas and Macdonald, Ross},
+  date = {2018-05-11},
   eprint = {1712.04798},
   eprinttype = {arxiv},
-  note = {in press},
+  pages = {4277-4281},
   title = {A Multimodal Corpus of Expert Gaze and Behavior during Phonetic Segmentation Tasks},
-  url = {https://arxiv.org/abs/1712.04798}
+  url = {http://www.lrec-conf.org/proceedings/lrec2018/summaries/676.html}
 }
 ```
 
@@ -36,4 +37,4 @@ For details, see the [paper] to be presented at LREC 2018:
 [Matroska]: https://www.matroska.org/
 [VLC]: https://www.videolan.org/vlc/
 [audio]: src/experiment/northwind_rm.flac
-[paper]: https://arxiv.org/abs/1712.04798
+[paper]: http://www.lrec-conf.org/proceedings/lrec2018/summaries/676.html
