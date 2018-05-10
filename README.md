@@ -1,10 +1,43 @@
-# eyetracking-data
+# Phonetic Segmentation Eyetracking Data
 
 Data collected for experiments with eyetracking during phonetic segmentation tasks.
 
-## Video data
+See the [releases] to download the data.
 
-We have released a [5 min. preview] of the data.
+## Data
+
+The data consists of a [YAML] file containing a list of static scenes viewed by each subject ("vp"), with associated gaze events and relevant UI details.
+Example excerpt:
+
+```yaml
+- start: 2014-12-10T08:24:16.033Z
+  end: 2014-12-10T08:24:18.033Z
+  windowStart: 0.0
+  windowEnd: 3.3231078705735193
+  gaze:
+  - vp: '02'
+    timeStamp: 2014-12-10T08:24:16.416Z
+    signalTime: 1.2743769
+    gazeType: Fixation
+    gazeDur: 425.0
+    gazeRegion: spectrogram
+    position:
+      xPos: 761
+      yPos: 579
+    subRegion: middle
+  - vp: '02'
+    timeStamp: 2014-12-10T08:24:16.858Z
+    signalTime: 1.3288541
+    gazeType: Fixation
+    gazeDur: 175.0
+    gazeRegion: spectrogram
+    position:
+      xPos: 789
+      yPos: 563
+    subRegion: top
+```
+
+## Video data
 
 For each subject, we provide a video in [Matroska] format (which can be played in [VLC] and other free software), including
 - screen capture of the session (video stream #1)
@@ -33,7 +66,8 @@ For details, see the [paper] presented at LREC 2018:
 }
 ```
 
-[5 min. preview]: https://github.com/m2ci-msp/eyetracking-data/releases/tag/v1.0-preview
+[YAML]: http://yaml.org/
+[releases]: https://github.com/m2ci-msp/eyetracking-data/releases
 [Matroska]: https://www.matroska.org/
 [VLC]: https://www.videolan.org/vlc/
 [audio]: src/experiment/northwind_rm.flac
