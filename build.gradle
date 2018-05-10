@@ -1,6 +1,8 @@
-subprojects {
+allprojects {
     apply plugin: 'base'
+}
 
+subprojects {
     ext {
         praatMargins = [
                 left                       : 106,
@@ -110,4 +112,9 @@ subprojects {
             builtBy muxStreams
         }
     }
+}
+
+task assembleData(type: AssembleData) {
+    srcFiles = files(subprojects.collect { it.mergeTobiiandPraatLogs.destFile })
+    destFile = layout.buildDirectory.file("${project.name}.yaml")
 }
