@@ -37,9 +37,9 @@ class ConvertTobiiLog extends DefaultTask {
                             date : destDateFormat.format(date),
                             value: [
                                     gaze_type    : gazeEvent,
-                                    gaze_duration: gazeDuration,
-                                    xPos         : xPosition,
-                                    yPos         : yPosition
+                                    gaze_duration: gazeDuration as int,
+                                    xPos         : xPosition as int,
+                                    yPos         : yPosition as int
                             ]]
                     prevXPosition = xPosition
                     prevYPosition = yPosition
