@@ -4,6 +4,8 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.*
 import org.yaml.snakeyaml.*
 
+import java.text.SimpleDateFormat
+
 class ConvertPraatLogToYaml extends DefaultTask {
 
     @InputFile
@@ -21,15 +23,16 @@ class ConvertPraatLogToYaml extends DefaultTask {
         def frameStr = ''
         def offsetStr = project.findProperty('offset')
         def offset = offsetStr ? Integer.parseInt(offsetStr) : 0
+        def dateFormat = new SimpleDateFormat('EEE MMM dd HH:mm:ss yyyy')
+        dateFormat.timeZone = TimeZone.getTimeZone('Europe/Berlin')
         srcFile.get().asFile.eachLine { line ->
             switch (line) {
                 case ~/^Editor type:.+/:
                     if (frameStr) {
                         def map = yaml.load(frameStr)
-                        def date = Date.parse('EEE MMM dd HH:mm:ss yyyy', map.Date, TimeZone.getTimeZone('Europe/Berlin'))
+                        def date = dateFormat.parse(map.Date)
                         use(TimeCategory) {
-                            def dateInMilliSeconds = date.getTime() - offset
-                            date = new Date(dateInMilliSeconds)
+                            date.time -= offset
                         }
                         frames << [window: [start: (map.'Window start' - 'seconds') as double,
                                             end  : (map.'Window end' - 'seconds') as double],

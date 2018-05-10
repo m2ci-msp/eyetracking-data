@@ -1,6 +1,20 @@
 subprojects {
     apply plugin: 'base'
 
+    ext {
+        praatMargins = [
+                left                       : 106,
+                right                      : 1814,
+                top                        : 122,
+                spectrogramTop             : 464,
+                spectrogramUpperBandBottom : 565,
+                spectrogramMiddleBandBottom: 770,
+                spectrogramBottom          : 805,
+                bottom                     : 1049
+        ]
+        praatMargins.width = praatMargins.right - praatMargins.left
+    }
+
     repositories {
         ['cloudark', 'localhost'].each { host ->
             maven {
