@@ -121,6 +121,9 @@ task assembleData(type: AssembleData) {
 
 task packageData(type: Zip) {
     from assembleData
+    from rootDir, {
+        include 'README.md', 'LICENSE.md', 'CHANGELOG.md'
+    }
 }
 
 artifacts {
